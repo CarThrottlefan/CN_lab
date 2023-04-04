@@ -3,13 +3,13 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket 
                                                         # AF_IFNET - address family, SOCK_STREAM - socket type. 
                                                         # The parameters specify the network-layer and transport- layer protocol.
 
-host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
-sock.connect(host_port)
+user_name = ""
 
 def send_shake():
     try: 
-        user_name = "alpha"
-
+        global user_name
+        user_name = input("What's your username?\n")
+        
         message_to_send = "HELLO-FROM " + user_name
         string_bytes = message_to_send.encode("utf-8")
 
@@ -31,13 +31,33 @@ def recv_shake():
         if not data:
             print("Server is closed")
         elif(data == "BUSY\n"):
-            print("Sorry, maximum numbers of users exceeded. Please try again later/n")
+            print("Sorry, maximum numbers of users exceeded. Please try again later\n")
             #FIXME maybe add a quick shortcut to QUIT func?
-        elif(data == "IN-USE/n"):
-            print("Current username is in use. Enter a new one:/n")
-            #FIXME add a way for user to add new name
+        elif(data == "IN-USE\n"):
+            print("Current username is in use.\n")
+            global user_name
+            user_name = input("Enter a new one: ")
+            #FIXME add a way for user to add new name - WORKING?
+            
+        elif data:
+            chat_error(data)
         
     except OSError as msg:
         print(msg)
             
-          
+def chat_error(data):  
+    
+    if(data == "BAD-DEST-USER\n"):
+        print("The user you are trying to reach is currently offline. Want to select another one?\n")
+        # FIXME prompt user to select new user from list
+    # elif(data == "BAD-RQST-HDR\n"):
+        # FIXME find a way to fix broken header
+    # elif(data == "BAD-RQST-BODY\n"):
+        # FIXME find a way to fix broken body
+    else:
+        print("An unknown error has occured.\n") 
+
+         
+host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
+sock.connect(host_port)
+send_shake(), recv_shake()
