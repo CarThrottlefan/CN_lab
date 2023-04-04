@@ -40,5 +40,4 @@ def recv_shake():
     except OSError as msg:
         print(msg)
             
-            
-            
+          
