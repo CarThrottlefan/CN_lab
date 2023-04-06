@@ -4,22 +4,30 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket 
                                                         # The parameters specify the network-layer and transport- layer protocol.
 
 user_name = ""
+name_list = ""
+
+def send_func(command, msg): # function that sends user input and/or preceeding commands to server
+    message_to_send = command + msg + "\n"
+    string_bytes = message_to_send.encode("utf-8")
+
+    bytes_len = len(string_bytes)
+    num_bytes_to_send = bytes_len
+
+    while num_bytes_to_send > 0:
+        num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:])
+
+def curr_names_list():
+    send_func("","LIST") # requests for all currently logged users
+    global name_list 
+    name_list = sock.recv(4096) # stores response in a global variable
+     
 
 def send_shake():
     try: 
         global user_name
         user_name = input("What's your username?\n")
+        send_func("HELLO-FROM ", user_name)
         
-        message_to_send = "HELLO-FROM " + user_name
-        string_bytes = message_to_send.encode("utf-8")
-
-        bytes_len = len(string_bytes)
-        num_bytes_to_send = bytes_len
-
-        while num_bytes_to_send > 0:
-            # send returns the number of bytes that were sent.
-            num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:]) # sends the remaining bytes, if needed until 0
-    
     except OSError as msg: # exception catch
         print(msg)
         
@@ -35,8 +43,7 @@ def recv_shake():
             #FIXME maybe add a quick shortcut to QUIT func?
         elif(data == "IN-USE\n"):
             print("Current username is in use.\n")
-            global user_name
-            user_name = input("Enter a new one: ")
+            send_shake()
             #FIXME add a way for user to add new name - WORKING?
             
         elif data:
