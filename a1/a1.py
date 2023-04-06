@@ -18,10 +18,13 @@ def send_func(command, msg): # function that sends user input and/or preceeding 
 
 def user_cmd(txt_input): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
     if (txt_input == "!quit"):
+        print(0)
         #FIXME implement a quit from the server
-    elif(txt_input == "!who")
+    elif(txt_input == "!who"):
+        print(0)
         #FIXME implement a link to the list function
-    elif("@" in txt_input)
+    elif("@" in txt_input):
+        print(0)
         #FIXME link to the send message + select user function(s)
     else:
         print("Command unknown. Type in !help for a list of commands.\n")
@@ -47,15 +50,17 @@ def recv_shake():
         data = sock.recv(4096) # Receive at most 4096 bytes. 
         if data:
             print(data)
+            #FIXME make the program if connect works
         else:
             if not data:
                 print("Server is closed")
             elif(data == "BUSY\n"):
                 print("Sorry, maximum numbers of users exceeded. Please try again later\n")
-                
                 #FIXME add a quick shortcut to QUIT func
             elif(data == "IN-USE\n"):
                 print("Current username is in use.\n")
+                host_port = ("143.47.184.219", 5378)
+                sock.connect(host_port)
                 send_shake()
                 #FIXME add a way for user to add new name - WORKING?
             elif data:
