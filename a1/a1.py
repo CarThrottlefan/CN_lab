@@ -16,6 +16,16 @@ def send_func(command, msg): # function that sends user input and/or preceeding 
     while num_bytes_to_send > 0:
         num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:])
 
+def user_cmd(txt_input): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
+    if (txt_input == "!quit"):
+        #FIXME implement a quit from the server
+    elif(txt_input == "!who")
+        #FIXME implement a link to the list function
+    elif("@" in txt_input)
+        #FIXME link to the send message + select user function(s)
+    else:
+        print("Command unknown. Type in !help for a list of commands.\n")
+        #FIXME implement a help function that shows a list of commands
 def curr_names_list():
     send_func("","LIST") # requests for all currently logged users
     global name_list 
@@ -35,19 +45,21 @@ def recv_shake():
     try: 
          # Waiting until data comes in 
         data = sock.recv(4096) # Receive at most 4096 bytes. 
-
-        if not data:
-            print("Server is closed")
-        elif(data == "BUSY\n"):
-            print("Sorry, maximum numbers of users exceeded. Please try again later\n")
-            #FIXME maybe add a quick shortcut to QUIT func?
-        elif(data == "IN-USE\n"):
-            print("Current username is in use.\n")
-            send_shake()
-            #FIXME add a way for user to add new name - WORKING?
-            
-        elif data:
-            chat_error(data)
+        if data:
+            print(data)
+        else:
+            if not data:
+                print("Server is closed")
+            elif(data == "BUSY\n"):
+                print("Sorry, maximum numbers of users exceeded. Please try again later\n")
+                
+                #FIXME add a quick shortcut to QUIT func
+            elif(data == "IN-USE\n"):
+                print("Current username is in use.\n")
+                send_shake()
+                #FIXME add a way for user to add new name - WORKING?
+            elif data:
+                chat_error(data)
         
     except OSError as msg:
         print(msg)
