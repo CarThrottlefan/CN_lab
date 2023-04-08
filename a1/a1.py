@@ -98,6 +98,5 @@ def chat_error(data):
 host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
 sock.connect(host_port)
 send_thread = threading.Thread(target=send_shake)
-send_thread.start()
-send_shake(), recv_shake()
-send_thread.join()
+send_thread.start(), send_thread.join()
+recv_shake()
