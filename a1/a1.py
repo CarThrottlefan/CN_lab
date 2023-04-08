@@ -1,11 +1,11 @@
 import threading
-import errno
 import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket with the library above. The parameters in the brackets are 
                                                         # AF_IFNET - address family, SOCK_STREAM - socket type. 
                                                         # The parameters specify the network-layer and transport- layer protocol.
 user_name = ""
 name_list = ""
+txt_command = ""
 
 def send_func(command, msg): # function that sends user input and/or preceeding commands to server
     message_to_send = command + msg + "\n"
@@ -17,13 +17,11 @@ def send_func(command, msg): # function that sends user input and/or preceeding 
     while num_bytes_to_send > 0:
             sock.setblocking(1)
             num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:])
-        #except OSError as e:
-            #if os.strerror() != errno.EAGAIN:
-            #   raise e
     if(num_bytes_to_send == 0):
         sock.setblocking(0)
 
-def user_cmd(txt_input): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
+def user_cmd(): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
+    global txt_input
     if (txt_input == "!quit"):
         print(0)
         #FIXME implement a quit from the server
@@ -91,5 +89,5 @@ def chat_error(data):
          
 host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
 sock.connect(host_port)
-sock.setblocking(0)
+send_thread = threading.Thread(target=send_shake, args=(command, msg))
 send_shake(), recv_shake()
