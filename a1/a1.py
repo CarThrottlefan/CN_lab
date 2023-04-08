@@ -1,3 +1,4 @@
+import threading
 import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket with the library above. The parameters in the brackets are 
                                                         # AF_IFNET - address family, SOCK_STREAM - socket type. 
