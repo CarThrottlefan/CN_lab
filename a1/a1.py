@@ -18,11 +18,7 @@ def send_func(command, msg, sock): # function that sends user input and/or prece
     #while True: #FIXME temporary, makes the thread run untill it is ended
         message_to_send = command + msg + "\n"
         string_bytes = message_to_send.encode("utf-8")
-
-        global txt_input
-        txt_input = [] # reinitializes list to empty
-        txt_input = msg.split(" ", 2) # splits message from the first space (command) + (msg)
-
+        
         bytes_len = len(string_bytes)
         num_bytes_to_send = bytes_len
 
@@ -30,19 +26,24 @@ def send_func(command, msg, sock): # function that sends user input and/or prece
             num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:])
 
 def user_cmd(): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
-    global txt_input #FIXME Not tested, not sure if they will work
-    if (txt_input[0] == "!quit"):
-        print(0)
+    global txt_input, txt_cmd, txt_msg #FIXME Not tested, not sure if they will work
+    user_cmds = input("Input a command, or type in !help for a list of commands.\n")
+    txt_input = user_cmds.split(" ", 2)  # splits message from the first space (command) + (msg)
+    txt_cmd = txt_input[0]
+    if (len(txt_input) > 1):
+        txt_msg = txt_input[1]
+    if (txt_cmd == "!quit"):
+        print(1)
+        sock.close()
         #FIXME implement a quit from the server
-    elif(txt_input[0] == "!who"):
-        print(0)
+    elif(txt_cmd == "!who"):
+        print(2)
         get_list = threading.Thread(target=curr_names_list,)
         get_list.start(), get_list.join()
-        sock.close()
         #FIXME implement a link to the list function
-        curr_names_list()
-    elif("@" in txt_input[0]):
-        print(0)
+        #curr_names_list()
+    elif("@" in txt_cmd):
+        print()
         #FIXME link to the send message + select user function(s)
     else:
         print("Command unknown. Type in !help for a list of commands.\n")
@@ -84,7 +85,7 @@ def recv_func(sock):
                 print(data)
                 global user_logged
                 user_logged = True
-                curr_names_list()
+                user_cmd()
                 #FIXME make the program if connect works
             #else:
                 #idk
