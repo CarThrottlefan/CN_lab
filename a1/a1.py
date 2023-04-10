@@ -8,7 +8,7 @@ sock = 0
                                                         # AF_IFNET - address family, SOCK_STREAM - socket type. 
                                                         # The parameters specify the network-layer and transport- layer protocol.
 user_name = ""
-name_list = ""
+name_list = []
 txt_input = []
 txt_cmd = ""
 txt_msg = ""
@@ -49,10 +49,12 @@ def user_cmd(): # cmmds list: !quit = quits program, !who = shows list of online
         #FIXME implement a help function that shows a list of commands
         
 def curr_names_list():
+    print('namelist')
     global sock
     send_func("","LIST", sock) # requests for all currently logged users
     global name_list 
-    name_list = sock.recv(4096) # stores response in a global variable
+    name_list = sock.recv(4096)# stores response in a global variable
+    print(name_list)
      
 
 def send_shake():
@@ -73,10 +75,8 @@ def recv_func(sock):
                 print("Sorry, maximum numbers of users exceeded. Please try again later\n")
                 #FIXME add a quick shortcut to QUIT func
             elif(data == b"IN-USE\n"):
-                print(1)
-                print("Current username is in use.\n")
+                print("Current username is in use.")
                 main()
-                #FIXME add a way for user to add new name
             #elif (data == "":
                 #chat_error(data)
             elif data:
