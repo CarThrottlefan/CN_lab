@@ -13,7 +13,7 @@ txt_msg = ""
 user_logged = False
 
 def send_func(command, msg, sock): # function that sends user input and/or preceeding commands to server
-    while True: #FIXME temporary, makes the thread run untill it is ended
+    #while True: #FIXME temporary, makes the thread run untill it is ended
         message_to_send = command + msg + "\n"
         string_bytes = message_to_send.encode("utf-8")
 
@@ -60,40 +60,41 @@ def send_shake():
         print(msg)
         
 def recv_func(sock):
-    while True: #FIXME temporary, makes the thread run untill it is ended
+    #while True: #FIXME temporary, makes the thread run untill it is ended
         try: 
             # Waiting until data comes in 
             data = sock.recv(4096) # Receive at most 4096 bytes. 
-            if data:
+            if(data == b"BUSY\n"):
+                print("Sorry, maximum numbers of users exceeded. Please try again later\n")
+                #FIXME add a quick shortcut to QUIT func
+            elif(data == b"IN-USE\n"):
+                print(1)
+                print("Current username is in use.\n")
+                main()
+                #FIXME add a way for user to add new name - WORKING?
+            #elif (data == "":
+                #chat_error(data)
+            elif data:
+                print(0)
                 print(data)
                 global user_logged
                 user_logged = True
                 curr_names_list()
                 #FIXME make the program if connect works
-            else:
-                if not data:
-                    print("Server is closed")
-                elif(data == "BUSY\n"):
-                    print("Sorry, maximum numbers of users exceeded. Please try again later\n")
-                    #FIXME add a quick shortcut to QUIT func
-                elif(data == "IN-USE\n"):
-                    print("Current username is in use.\n")
-                    main()
-                    #FIXME add a way for user to add new name - WORKING?
-                elif data:
-                    chat_error(data)
+            #else:
+                #idk
             
         except OSError as msg:
             print(msg)
             
 def chat_error(data):  
     
-    if(data == "BAD-DEST-USER\n"):
+    if(data == b"BAD-DEST-USER\n"):
         print("The user you are trying to reach is currently offline. Want to select another one?\n")
         # FIXME prompt user to select new user from list
-    # elif(data == "BAD-RQST-HDR\n"):
+    # elif(data == b"BAD-RQST-HDR\n"):
         # FIXME find a way to fix broken header
-    # elif(data == "BAD-RQST-BODY\n"):
+    # elif(data == b"BAD-RQST-BODY\n"):
         # FIXME find a way to fix broken body
     else:
         print("An unknown error has occured.\n")
@@ -107,12 +108,17 @@ def main():
     global sock
     sock.connect(host_port)
     
+    print('main')
+    
     send_thread = threading.Thread(target=send_shake,)
     recv_thread = threading.Thread(target=recv_func, args=(sock,))
     send_thread.start(), recv_thread.start()
     send_thread.join(), recv_thread.join()
     
     sock.close()
+    
+    #sock.connect(host_port)
+    
     
 if __name__ == "__main__":
     main()
