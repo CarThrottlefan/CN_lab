@@ -2,7 +2,9 @@ import threading
 import socket
 import select
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket with the library above. The parameters in the brackets are 
+sock = 0
+
+#sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # creates a new socket with the library above. The parameters in the brackets are 
                                                         # AF_IFNET - address family, SOCK_STREAM - socket type. 
                                                         # The parameters specify the network-layer and transport- layer protocol.
 user_name = ""
@@ -28,12 +30,15 @@ def send_func(command, msg, sock): # function that sends user input and/or prece
             num_bytes_to_send -= sock.send(string_bytes[bytes_len-num_bytes_to_send:])
 
 def user_cmd(): # cmmds list: !quit = quits program, !who = shows list of online users, @username message = receiver and message
-    global txt_input
+    global txt_input #FIXME Not tested, not sure if they will work
     if (txt_input[0] == "!quit"):
         print(0)
         #FIXME implement a quit from the server
     elif(txt_input[0] == "!who"):
         print(0)
+        get_list = threading.Thread(target=curr_names_list,)
+        get_list.start(), get_list.join()
+        sock.close()
         #FIXME implement a link to the list function
         curr_names_list()
     elif("@" in txt_input[0]):
@@ -71,7 +76,7 @@ def recv_func(sock):
                 print(1)
                 print("Current username is in use.\n")
                 main()
-                #FIXME add a way for user to add new name - WORKING?
+                #FIXME add a way for user to add new name
             #elif (data == "":
                 #chat_error(data)
             elif data:
@@ -103,19 +108,20 @@ def chat_error(data):
     
 
 def main():
-         
-    host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
+    
     global sock
+    print('main')
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     
+    host_port = ("143.47.184.219", 5378) # port used to connect to the vu chat server
     sock.connect(host_port)
     
-    print('main')
     
     send_thread = threading.Thread(target=send_shake,)
     recv_thread = threading.Thread(target=recv_func, args=(sock,))
     send_thread.start(), recv_thread.start()
     send_thread.join(), recv_thread.join()
     
-    sock.close()
+    #sock.close()
     
     #sock.connect(host_port)
     
