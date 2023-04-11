@@ -32,25 +32,22 @@ def user_cmd(): # cmmds list: !quit = quits program, !who = shows list of online
     txt_cmd = txt_input[0]
     if (len(txt_input) > 1):
         txt_msg = txt_input[1]
-    if (txt_cmd == "!quit"):
+    if (txt_cmd == "!quit"): 
         print(1)
         sock.close()
-        #FIXME implement a quit from the server
     elif(txt_cmd == "!who"):
         print(2)
         get_list = threading.Thread(target=curr_names_list,)
         get_list.start(), get_list.join()
-        #FIXME implement a link to the list function
-        #curr_names_list()
     elif("@" in txt_cmd):
         print()
         #FIXME link to the send message + select user function(s)
+    elif(txt_cmd == "!help"):
+        print("Current list of commands: !quit = quits program, !who = shows list of online users, @username message = first is receiver, second is message (separated by a space)\n")
     else:
         print("Command unknown. Type in !help for a list of commands.\n")
-        #FIXME implement a help function that shows a list of commands
         
 def curr_names_list():
-    print('namelist')
     global sock
     send_func("","LIST", sock) # requests for all currently logged users
     global name_list 
