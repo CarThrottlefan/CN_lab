@@ -16,7 +16,7 @@ print("This is the server IP: ", serverIp)
 #listen for connections
 numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
-usernames = {'Alex'} # set of usernames
+usernames = {'Alex\n'} # set of usernames
 
 def send(sock, msg): # sends whole message over socket
 
@@ -61,12 +61,15 @@ def main():
         client_sock, client_address = serverSocket.accept()
         data = recv(client_sock)
         print('Data from client is ' + data)
-        msg = data.split(" ", 1)
+        msg = data.split(" ", 1) #this contains the list with [command, msg]
+        name = msg[1]
+        print("Name is " + name)
         #print(msg)
         #print(msg[1])
         
-        if data[1] in usernames:
+        if msg[1] in usernames:
             send(client_sock,"IN-USE")
+            main()
         else:
             #print('Data = ' + data[0])
             string = "HELLO " + msg[1]
