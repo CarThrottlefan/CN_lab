@@ -38,16 +38,19 @@ def recv(sock):
 def user_handle(client_sock, client_address):
     while True:
         try: 
-            data = serverSocket.recv(client_sock)
+            data = recv(client_sock)
             msg = data.split(" ", 1) # splits the received data into command and TXT
             cmd = msg[0], txt = msg[1]
-    
-            match data:
+
+            match cmd:
                 case 'LIST\n':
                     usernames = str(usernames)
-                    data.send(client_sock, ('List of current users: ' + usernames))
+                    send(client_sock, ('List of current users: ' + usernames))
+                case cmd:
+                    continue
         except:
-            print('Error')
+            print('Error 1')
+            os._exit(1)
               
   
 
@@ -57,13 +60,19 @@ def main():
         print('Usernames: ', usernames)
         client_sock, client_address = serverSocket.accept()
         data = recv(client_sock)
+        print('Data from client is ' + data)
         msg = data.split(" ", 1)
+        #print(msg)
+        #print(msg[1])
         
         if data[1] in usernames:
-            client_sock.send('IN-USE\n'.encode('utf-8'))
+            send(client_sock,"IN-USE")
         else:
-            client_sock.send(('HELLO ' + data[1] + '\n').encode('utf-8'))
-            usernames.add(data[1])
+            #print('Data = ' + data[0])
+            string = "HELLO " + msg[1]
+            print(string)
+            send(client_sock, string)
+            usernames.add(msg[1])
                  
         server_thread = threading.Thread(target= user_handle, args=(client_sock, client_address))
         server_thread.start()
