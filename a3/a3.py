@@ -16,7 +16,7 @@ print("This is the server IP: ", serverIp)
 numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
 usernames = {'Alex'} # set of usernames
-user_sockets = [] #list of user sockets
+user_info = [] #list of user sockets+names, each user a tuple
 
 def send(sock, msg): # sends whole message over socket
     string_bytes = (msg + '\n').encode("utf-8", "replace")
@@ -36,6 +36,9 @@ def recv(sock):
 def user_handle(client_sock, client_address):
     while True:
         try: 
+            #if input == '!quit': #FIXME implement a quit/shutdown function for the server
+                #os._exit(1)
+            
             data = recv(client_sock)
             print('Data from client is ' + data)
             msg = data.split(" ", 1)# splits the received data into command and TXT
@@ -72,7 +75,9 @@ def main():
         print('Server has started...\n')
         print('Usernames: ', usernames)
         client_sock, client_address = serverSocket.accept()
-        user_sockets.append(client_sock)
+        
+         
+        #print(user_sockets)
         
         data = recv(client_sock)
         msg = data.split(" ", 1) #this contains the list with [command, msg]
@@ -85,6 +90,10 @@ def main():
             send(client_sock,"IN-USE")
             main()
         else:
+            user_tuple = (client_sock, name) #generates a tuple of a user's name+socket
+            user_info.append(user_tuple) #appends each new user's tuple to a list of connected user's tuples
+            print(user_info)
+            
             string = "HELLO " + name
             send(client_sock, string)
             usernames.add(name)
@@ -94,3 +103,4 @@ def main():
         
 if __name__ == "__main__":
     main()
+    
