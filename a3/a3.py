@@ -4,6 +4,11 @@ import os
 import re
 from time import sleep
 
+class userData:
+    def __init__(self, socket, alias):
+        self.sock =  socket
+        self.alias = alias
+
 serverSocket = socket.socket() 
 hostName = socket.gethostname() # returns the name of the local machine
 port = 8231
@@ -15,8 +20,10 @@ print("This is the server IP: ", serverIp)
 
 numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
-usernames = {'Alex'} # set of usernames
-user_info = [] #list of user sockets+names, each user a tuple
+nullUser = userData(serverSocket, 'Server')
+userSet = {nullUser} # set of usernames
+userNames = {'Alex'}
+#user_info = [] #list of user sockets+names, each user a tuple
 
 def send(sock, msg): # sends whole message over socket
     string_bytes = (msg + '\n').encode("utf-8", "replace")
@@ -55,14 +62,18 @@ def user_handle(client_sock, client_address):
 
             match cmd:
                 case 'LIST\n':
-                    users = str(usernames) #converts the set of users to a string
-                    #print(users)
+                    print('It gets here')
+                    user_names = {user.alias for user in userSet}
+                    users = str(user_names)
+                    print('It gets here 2')
+                    #users = str(usernames) #converts the set of users to a string
+                    print(users)
                     string = 'List of current users: ' + users
                     send(client_sock, string)
                     
                 #case cmd if cmd.startswith('SEND'):
+                    #FIXME seatch for the username in the list of tuples, then access said tuple and get the socket
                     
-                
                 case cmd:
                     continue
                 
@@ -73,11 +84,9 @@ def user_handle(client_sock, client_address):
 def main():
     while True:
         print('Server has started...\n')
-        print('Usernames: ', usernames)
+        #print('Usernames: ', usernamesSet)
+        print(type(userSet))
         client_sock, client_address = serverSocket.accept()
-        
-         
-        #print(user_sockets)
         
         data = recv(client_sock)
         msg = data.split(" ", 1) #this contains the list with [command, msg]
@@ -86,17 +95,19 @@ def main():
         
         global numOfUsers #FIXME implement a way to check if max num of connections is not reached
         
-        if name in usernames:
+        if name in userNames:
             send(client_sock,"IN-USE")
             main()
         else:
-            user_tuple = (client_sock, name) #generates a tuple of a user's name+socket
-            user_info.append(user_tuple) #appends each new user's tuple to a list of connected user's tuples
-            print(user_info)
-            
+            user_class = userData(client_sock, name)
+            userSet.add(user_class)
+            #user_tuple = (client_sock, name) #generates a tuple of a user's name+socket
+            #print(usernamesSet)
+            #user_info.append(user_tuple) #appends each new user's tuple to a list of connected user's tuples
+            #print(user_info)
             string = "HELLO " + name
             send(client_sock, string)
-            usernames.add(name)
+            userNames.add(name)
                  
         server_thread = threading.Thread(target= user_handle, args=(client_sock, client_address))
         server_thread.start()
