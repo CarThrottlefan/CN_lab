@@ -47,32 +47,38 @@ def user_handle(client_sock, client_address):
             
             data = recv(client_sock)
             print('Data from client is ' + data)
-            msg = data.split(" ", 1)# splits the received data into command and TXT
+            msg = data.split(" ")# splits the received data into command and TXT
             msg_set = set(msg)
             
             if len(msg) == 1:
                 cmd = msg[0]
             elif len(msg) == 3:
                 cmd = msg[0]
-                username = msg[1]
-                txt = msg[2]  
+                receiver_name = msg[1]
+                txt = msg[2]
+                  
             else:
                 cmd = msg[0], txt = msg[1]
 
             match cmd:
                 case 'LIST\n':
-                    print('It gets here')
                     user_names = {user.alias for user in userSet}
                     users = str(user_names)
-                    print('It gets here 2')
+                    #print('It gets here 2')
                     #users = str(usernames) #converts the set of users to a string
-                    print(users)
+                    #print(users)
                     string = 'List of current users: ' + users
                     send(client_sock, string)
                     
-                #case cmd if cmd.startswith('SEND'):
-                    #FIXME seatch for the username in the list of tuples, then access said tuple and get the socket
-                    
+                case cmd if cmd.startswith('SEND'):
+                    #print('It gets here')
+                    for user in userSet:
+                        if user.alias == receiver_name:
+                            receiver_sock = user.sock
+                            txt = str(txt)
+                            send(client_sock, 'SEND-OK')
+                            send(receiver_sock, txt)
+                   
                 case cmd:
                     continue
                 
