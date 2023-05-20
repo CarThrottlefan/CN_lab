@@ -22,7 +22,7 @@ numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
 dummyUser = userData(serverSocket, 'Server')
 userSet = {dummyUser} # set of usernames
-#user_info = [] #list of user sockets+names, each user a tuple
+
 
 def send(sock, msg): # sends whole message over socket
     string_bytes = (msg + '\n').encode("utf-8", "replace")
