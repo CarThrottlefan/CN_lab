@@ -22,7 +22,6 @@ numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
 nullUser = userData(serverSocket, 'Server')
 userSet = {nullUser} # set of usernames
-userNames = {'Alex'}
 #user_info = [] #list of user sockets+names, each user a tuple
 
 def send(sock, msg): # sends whole message over socket
@@ -95,7 +94,11 @@ def main():
         
         global numOfUsers #FIXME implement a way to check if max num of connections is not reached
         
-        if name in userNames:
+        #if name in userNames:
+            #send(client_sock,"IN-USE")
+            #main()
+            
+        if any(user.alias == name for user in userSet):
             send(client_sock,"IN-USE")
             main()
         else:
@@ -107,7 +110,6 @@ def main():
             #print(user_info)
             string = "HELLO " + name
             send(client_sock, string)
-            userNames.add(name)
                  
         server_thread = threading.Thread(target= user_handle, args=(client_sock, client_address))
         server_thread.start()
