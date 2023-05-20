@@ -39,15 +39,18 @@ def recv(sock):
 
     return msg
     
-def user_handle(client_sock, client_address):
+def user_handle(client_sock, sender_name):
     while True:
         try: 
             #if input == '!quit': #FIXME implement a quit/shutdown function for the server
                 #os._exit(1)
             
+            userFound = False
             data = recv(client_sock)
+            
+
             print('Data from client is ' + data)
-            msg = data.split(" ")# splits the received data into command and TXT
+            msg = data.split(" ", 2)# splits the received data into command and TXT
             msg_set = set(msg)
             
             if len(msg) == 1:
@@ -76,8 +79,14 @@ def user_handle(client_sock, client_address):
                         if user.alias == receiver_name:
                             receiver_sock = user.sock
                             txt = str(txt)
+                            txt = 'DELIVERY ' +  str(sender_name) + ' ' + txt
                             send(client_sock, 'SEND-OK')
                             send(receiver_sock, txt)
+                            userFound = True
+                            
+                    if not userFound:
+                        print("Is it entering here?")
+                        send(client_sock, 'BAD-DEST-USER')
                    
                 case cmd:
                     continue
@@ -117,7 +126,7 @@ def main():
             string = "HELLO " + name
             send(client_sock, string)
                  
-        server_thread = threading.Thread(target= user_handle, args=(client_sock, client_address))
+        server_thread = threading.Thread(target= user_handle, args=(client_sock, name))
         server_thread.start()
         
 if __name__ == "__main__":
