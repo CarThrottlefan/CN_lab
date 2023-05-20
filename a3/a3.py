@@ -20,8 +20,8 @@ print("This is the server IP: ", serverIp)
 
 numOfUsers = 64 # change for more users to be supported
 serverSocket.listen(numOfUsers) # starts listening for connections
-nullUser = userData(serverSocket, 'Server')
-userSet = {nullUser} # set of usernames
+dummyUser = userData(serverSocket, 'Server')
+userSet = {dummyUser} # set of usernames
 #user_info = [] #list of user sockets+names, each user a tuple
 
 def send(sock, msg): # sends whole message over socket
