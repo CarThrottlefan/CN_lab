@@ -40,7 +40,7 @@ def recv(sock):
 
 # DELIVER
 
-host_port = ("143.47.184.219", 5378)
+host_port = ("192.168.50.143", 8231)
 
 msg = ""
 
@@ -77,10 +77,10 @@ def receive():
                     print(f"Message from @{msg[1]}: {msg[2]}")
                 
                 case "BAD-RQST-HDR":
-                    print("Client sent incorrect header")
+                    print("Wrong command")
                 
                 case "BAD-RQST-BODY":
-                    print("Client sent incorrect body")
+                    print("Message must contain text")
                 
                 case msg:
                     print(msg)
@@ -109,6 +109,12 @@ def write():
 
             case _:
                 print("Invalid command!")
+            #case msg: #simulates a "Bad Header request"
+                #send(sock, msg)
+            #case msg: #simulates a "Bad Body request"
+                #m = msg_pattern.match(msg)
+                #send(sock, 'SEND Alex')
+            
 
 
 receive_thread = threading.Thread(target=receive)
